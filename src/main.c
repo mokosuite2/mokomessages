@@ -20,6 +20,8 @@
 
 #include <mokosuite/utils/utils.h>
 #include <mokosuite/utils/cfg.h>
+#include <mokosuite/ui/gui.h>
+#include <mokosuite/pim/pim.h>
 #include <mokosuite/pim/messagesdb.h>
 #include <freesmartphone-glib/freesmartphone-glib.h>
 #include <phone-utils.h>
@@ -47,10 +49,15 @@ int main(int argc, char* argv[])
 
     /* other things */
     mokosuite_utils_init();
+    mokosuite_pim_init();
+    mokosuite_ui_init();
     config_init(SYSCONFDIR "/" PACKAGE);
 
     freesmartphone_glib_init();
     phone_utils_init();
+
+    EINA_LOG_DBG("Loading data from %s", MOKOMESSAGES_DATADIR);
+    elm_theme_extension_add(NULL, MOKOMESSAGES_DATADIR "/theme.edj");
 
     // TODO
     messagesdb_init(NULL, NULL);

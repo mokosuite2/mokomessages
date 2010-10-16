@@ -80,10 +80,6 @@ static void _list_realized(void *data, Evas_Object *obj, void *event_info)
 
 static Evas_Object* thread_list(void)
 {
-    // overlay per gli elementi della lista del log
-    elm_theme_overlay_add(NULL, "elm/genlist/item/thread/default");
-    elm_theme_overlay_add(NULL, "elm/genlist/item_odd/thread/default");
-
     Evas_Object* list = elm_genlist_add(win->win);
     elm_genlist_bounce_set(list, FALSE, FALSE);
     elm_genlist_horizontal_mode_set(list, ELM_LIST_LIMIT);
@@ -142,6 +138,10 @@ void thread_win_init(MokoSettingsService *settings)
 void thread_win_init(void* settings)
 #endif
 {
+    // overlay per gli elementi della lista dei thread
+    elm_theme_overlay_add(NULL, "elm/genlist/item/thread/default");
+    elm_theme_overlay_add(NULL, "elm/genlist/item_odd/thread/default");
+
     win = mokowin_new("mokomessages", TRUE);
     if (win == NULL) {
         g_error("[ThreadWin] Cannot create main window. Exiting");
@@ -151,7 +151,6 @@ void thread_win_init(void* settings)
     win->delete_callback = _delete;
 
     elm_win_title_set(win->win, _("Messaging"));
-    //elm_win_borderless_set(win->win, TRUE);
 
     mokowin_create_vbox(win, FALSE);
     mokowin_menu_enable(win);
@@ -163,4 +162,7 @@ void thread_win_init(void* settings)
 
     // carica le conversazioni :)
     messagesdb_foreach_thread(_thread, NULL);
+
+    // TEST
+    evas_object_resize(win->win, 480, 640);
 }
