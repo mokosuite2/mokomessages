@@ -25,7 +25,7 @@ then
 fi
 
 AM_GLIB_GNU_GETTEXT
-GETTEXT_PACKAGE="mokosuite"
+GETTEXT_PACKAGE="mokomessages"
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, ["$GETTEXT_PACKAGE"], [Name of the gettext message domain])
 

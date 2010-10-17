@@ -41,6 +41,7 @@ extern int _log_dom;
 #define LOG_LEVEL   EINA_LOG_LEVEL_INFO
 #endif
 
+#define MOKOMESSAGES_SYSCONFDIR     SYSCONFDIR "/mokosuite"
 #define MOKOMESSAGES_DATADIR        DATADIR "/mokosuite/messages"
 
 #endif  /* __GLOBALS_H */

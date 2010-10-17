@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     mokosuite_utils_init();
     mokosuite_pim_init();
     mokosuite_ui_init();
-    config_init(SYSCONFDIR "/" PACKAGE);
+    config_init(MOKOMESSAGES_SYSCONFDIR "/" PACKAGE ".conf");
 
     freesmartphone_glib_init();
     phone_utils_init();
