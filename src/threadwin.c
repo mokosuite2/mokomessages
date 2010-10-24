@@ -153,12 +153,13 @@ void thread_win_init(void* settings)
     elm_win_title_set(win->win, _("Messaging"));
 
     mokowin_create_vbox(win, FALSE);
-    mokowin_menu_enable(win);
+    mokowin_set_title(win, _("Messaging"));
 
+    mokowin_menu_enable(win);
     mokowin_menu_set(win, make_menu());
 
     th_list = thread_list();
-    elm_box_pack_start(win->vbox, th_list);
+    mokowin_pack_start(win, th_list);
 
     // carica le conversazioni :)
     messagesdb_foreach_thread(_thread, NULL);

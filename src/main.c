@@ -19,7 +19,6 @@
  */
 
 #include <mokosuite/utils/utils.h>
-#include <mokosuite/utils/cfg.h>
 #include <mokosuite/ui/gui.h>
 #include <mokosuite/pim/pim.h>
 #include <mokosuite/pim/messagesdb.h>
@@ -45,13 +44,11 @@ int main(int argc, char* argv[])
     eina_log_domain_level_set(PACKAGE, LOG_LEVEL);
 
     EINA_LOG_INFO("%s version %s", PACKAGE_NAME, VERSION);
-    elm_init(argc, argv);
 
     /* other things */
     mokosuite_utils_init();
     mokosuite_pim_init();
-    mokosuite_ui_init();
-    config_init(MOKOMESSAGES_SYSCONFDIR "/" PACKAGE ".conf");
+    mokosuite_ui_init(argc, argv);
 
     freesmartphone_glib_init();
     phone_utils_init();
