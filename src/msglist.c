@@ -32,16 +32,15 @@ static Evas_Object* create_bubble(MokoWin* win, const char* peer, const char* te
     Evas_Object* msg = elm_bubble_add(win->win);
     evas_object_size_hint_weight_set(msg, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(msg, EVAS_HINT_FILL, 0.0);
-    //elm_bubble_label_set(msg, peer);
-    //elm_bubble_info_set(msg, get_time_repr(time(NULL)));
+    elm_bubble_label_set(msg, peer);
+    elm_bubble_info_set(msg, get_time_repr(time(NULL)));
     elm_bubble_corner_set(msg, side);
     evas_object_show(msg);
 
-    Evas_Object* lbl = elm_label_add(win->win);
+    Evas_Object* lbl = elm_anchorblock_add(win->win);
     evas_object_size_hint_weight_set(lbl, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(lbl, EVAS_HINT_FILL, 0.0);
-    elm_label_line_wrap_set(lbl, TRUE);
-    elm_label_label_set(lbl, text);
+    elm_anchorblock_text_set(lbl, text);
     evas_object_show(lbl);
     elm_bubble_content_set(msg, lbl);
 
@@ -68,6 +67,12 @@ static void test_messages(MessageThread* t)
         "+393296061565",
         "Ciao :)",
         "bottom_left"
+    );
+    create_bubble(
+        MOKO_WIN(t->data[THREAD_DATA_MSGLIST]),
+        "+393296061565",
+        "Bella zio!!! :)<br>ZIOOOO!!! CACCHIOOO!!!!<br>CIAO :)",
+        "bottom_right"
     );
 
 #if 0
@@ -124,10 +129,24 @@ void msg_list_init(MessageThread* t)
 
     mokowin_menu_set(win, make_menu(win));
 
+    Evas_Object* reply = elm_entry_add(win->win);
+    elm_entry_single_line_set(reply, FALSE);
+    evas_object_size_hint_weight_set(reply, EVAS_HINT_EXPAND, 0.0);
+    evas_object_size_hint_align_set(reply, EVAS_HINT_FILL, 0.0);
+
+    mokowin_pack_end(win, reply, TRUE);
+    evas_object_show(reply);
+
     // store window :)
     t->data[THREAD_DATA_MSGLIST] = win;
 
     // TEST
     evas_object_resize(win->win, 480, 640);
     test_messages(t);
+
+    /* TODO scroll to end
+    int h;
+    evas_object_geometry_get(win->vbox, NULL, NULL, NULL, &h);
+    elm_scroller_region_show(win->scroller, 0, h, 480, 640);
+    */
 }

@@ -158,7 +158,7 @@ void thread_win_init(RemoteConfigService *config)
     mokowin_menu_set(win, make_menu());
 
     th_list = thread_list();
-    mokowin_pack_start(win, th_list);
+    mokowin_pack_start(win, th_list, FALSE);
 
     // carica le conversazioni :)
     messagesdb_foreach_thread(_thread, NULL);
