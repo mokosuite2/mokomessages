@@ -44,4 +44,11 @@ extern int _log_dom;
 #define MOKOMESSAGES_SYSCONFDIR     SYSCONFDIR "/mokosuite"
 #define MOKOMESSAGES_DATADIR        DATADIR "/mokosuite/messages"
 
+enum {
+    THREAD_DATA_LISTITEM = 0,
+    THREAD_DATA_CONTACTENTRY,
+    THREAD_DATA_MSGLIST,
+    THREAD_DATA_SIZE
+};
+
 #endif  /* __GLOBALS_H */

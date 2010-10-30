@@ -8,41 +8,38 @@
 
 #include <glib/gi18n-lib.h>
 
-/* finestra principale */
-static MokoWin* win = NULL;
-
 static void _delete(void* mokowin, Evas_Object* obj, void* event_info)
 {
     mokowin_hide((MokoWin *)mokowin);
 }
 
-void msg_list_activate(void)
+void msg_list_activate(MessageThread* t)
 {
-    g_return_if_fail(win != NULL);
+    g_return_if_fail(t->data[THREAD_DATA_MSGLIST] != NULL);
 
-    mokowin_activate(win);
+    mokowin_activate(MOKO_WIN(t->data[THREAD_DATA_MSGLIST]));
 }
 
-void msg_list_hide(void)
+void msg_list_hide(MessageThread* t)
 {
-    g_return_if_fail(win != NULL);
+    g_return_if_fail(t->data[THREAD_DATA_MSGLIST] != NULL);
 
-    mokowin_hide(win);
+    mokowin_hide(MOKO_WIN(t->data[THREAD_DATA_MSGLIST]));
 }
 
-static Evas_Object* create_bubble(const char* peer, const char* text, const char* side)
+static Evas_Object* create_bubble(MokoWin* win, const char* peer, const char* text, const char* side)
 {
     Evas_Object* msg = elm_bubble_add(win->win);
     evas_object_size_hint_weight_set(msg, EVAS_HINT_EXPAND, 0.0);
-    evas_object_size_hint_align_set(msg, EVAS_HINT_FILL, 1.0);
-    elm_bubble_label_set(msg, peer);
-    elm_bubble_info_set(msg, get_time_repr(time(NULL)));
+    evas_object_size_hint_align_set(msg, EVAS_HINT_FILL, 0.0);
+    //elm_bubble_label_set(msg, peer);
+    //elm_bubble_info_set(msg, get_time_repr(time(NULL)));
     elm_bubble_corner_set(msg, side);
     evas_object_show(msg);
 
     Evas_Object* lbl = elm_label_add(win->win);
-    evas_object_size_hint_weight_set(lbl, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(lbl, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    evas_object_size_hint_weight_set(lbl, EVAS_HINT_EXPAND, 0.0);
+    evas_object_size_hint_align_set(lbl, EVAS_HINT_FILL, 0.0);
     elm_label_line_wrap_set(lbl, TRUE);
     elm_label_label_set(lbl, text);
     evas_object_show(lbl);
@@ -52,17 +49,25 @@ static Evas_Object* create_bubble(const char* peer, const char* text, const char
     return msg;
 }
 
-static void test_messages(void)
+static void test_messages(MessageThread* t)
 {
     create_bubble(
-        "155",
+        MOKO_WIN(t->data[THREAD_DATA_MSGLIST]),
+        "+393296061565",
         "Messaggio di testo<br>Ciao zio come stai?<br>Io bene :)<br>Bella!",
         "bottom_left"
     );
     create_bubble(
+        MOKO_WIN(t->data[THREAD_DATA_MSGLIST]),
         "+393296061565",
         "Test linee lunghe qua una volta c'era un bel messaggio l'ho dovuto togliere perche' svn e' pubblico :(",
         "bottom_right"
+    );
+    create_bubble(
+        MOKO_WIN(t->data[THREAD_DATA_MSGLIST]),
+        "+393296061565",
+        "Ciao :)",
+        "bottom_left"
     );
 
 #if 0
@@ -81,7 +86,7 @@ static void test_messages(void)
 #endif
 }
 
-static Evas_Object* make_menu(void)
+static Evas_Object* make_menu(MokoWin* win)
 {
     Evas_Object *m = elm_table_add(win->win);
     elm_table_homogenous_set(m, TRUE);
@@ -100,28 +105,29 @@ static Evas_Object* make_menu(void)
     return m;
 }
 
-void msg_list_init(MessageThread* thread)
+void msg_list_init(MessageThread* t)
 {
-    win = mokowin_new("mokosmsthread", TRUE);
+    MokoWin* win = mokowin_new("mokosmsthread", TRUE);
     if (win == NULL) {
-        g_error("[MSgList] Cannot create main window. Exiting");
+        g_error("[MsgList] Cannot create main window. Exiting");
         return;
     }
 
     win->delete_callback = _delete;
 
-    char* s = g_strdup_printf(_("Conversation with %s"), thread->peer);
+    char* s = g_strdup_printf(_("Conversation with %s"), t->peer);
     elm_win_title_set(win->win, s);
     g_free(s);
-
-    //elm_win_borderless_set(win->win, TRUE);
 
     mokowin_create_vbox(win, TRUE);
     mokowin_menu_enable(win);
 
-    mokowin_menu_set(win, make_menu());
+    mokowin_menu_set(win, make_menu(win));
 
-    test_messages();
-    // TODO carica le conversazioni :)
-    // TODO g_idle_add(...);
+    // store window :)
+    t->data[THREAD_DATA_MSGLIST] = win;
+
+    // TEST
+    evas_object_resize(win->win, 480, 640);
+    test_messages(t);
 }

@@ -3,6 +3,8 @@
 #include <mokosuite/ui/gui.h>
 #include <mokosuite/utils/misc.h>
 #include <mokosuite/pim/messagesdb.h>
+#include <mokosuite/utils/remote-config-service.h>
+#include "msglist.h"
 
 #include <glib/gi18n-lib.h>
 
@@ -23,9 +25,9 @@ static void _list_selected(void *data, Evas_Object *obj, void *event_info) {
     elm_genlist_item_selected_set((Elm_Genlist_Item*)event_info, FALSE);
     // TODO
 
-    //thread_t* t = (thread_t *) elm_genlist_item_data_get((Elm_Genlist_Item*)event_info);
-    //msg_list_init(t);
-    //msg_list_activate();
+    MessageThread* t = (MessageThread*) elm_genlist_item_data_get((Elm_Genlist_Item*)event_info);
+    msg_list_init(t);
+    msg_list_activate(t);
 }
 
 void thread_win_activate(void)
@@ -128,15 +130,12 @@ void _thread(MessageThread* th, gpointer userdata)
 {
     g_debug("THREAD %p, userdata=%p", th, userdata);
 
-    elm_genlist_item_append(th_list, &th_itc, th, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
-
+    th->data = g_new0(gpointer, THREAD_DATA_SIZE);
+    th->data[THREAD_DATA_LISTITEM] =
+        elm_genlist_item_append(th_list, &th_itc, th, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 }
 
-#if 0
-void thread_win_init(MokoSettingsService *settings)
-#else
-void thread_win_init(void* settings)
-#endif
+void thread_win_init(RemoteConfigService *config)
 {
     // overlay per gli elementi della lista dei thread
     elm_theme_overlay_add(NULL, "elm/genlist/item/thread/default");
