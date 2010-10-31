@@ -74,23 +74,35 @@ static void test_messages(MessageThread* t)
         "Bella zio!!! :)<br>ZIOOOO!!! CACCHIOOO!!!!<br>CIAO :)",
         "bottom_right"
     );
-
-#if 0
-    thread_t* t;
-    t = g_new0(thread_t, 1);
-    t->peer = "155";
-    t->text = "Le abbiamo addebitato 9 euro per l'offerta del cazzo aggiuntivo.";
-    t->timestamp = time(NULL);
-    t->marked = TRUE;
-
-    t = g_new0(thread_t, 1);
-    t->peer = "+393296061565";
-    t->text = "Ciau more ti amo troppiximo!! Lo sai oggi ti ho fatto un regalino!:)!";
-    t->timestamp = time(NULL);
-    t->marked = FALSE;
-#endif
 }
 
+static Evas_Object* make_composer(MokoWin* win)
+{
+    Evas_Object* hbox = elm_box_add(win->win);
+    elm_box_horizontal_set(hbox, TRUE);
+    evas_object_size_hint_weight_set(hbox, EVAS_HINT_EXPAND, 0.0);
+    evas_object_size_hint_align_set(hbox, EVAS_HINT_FILL, 0.0);
+
+    Evas_Object* reply = elm_entry_add(win->win);
+    elm_entry_single_line_set(reply, FALSE);
+    evas_object_size_hint_weight_set(reply, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+    evas_object_size_hint_align_set(reply, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+    elm_box_pack_start(hbox, reply);
+    evas_object_show(reply);
+
+    Evas_Object* send = elm_button_add(win->win);
+    elm_button_label_set(send, _("Send"));
+    evas_object_size_hint_weight_set(send, 0.0, EVAS_HINT_EXPAND);
+    evas_object_size_hint_align_set(send, 1.0, EVAS_HINT_FILL);
+
+    elm_box_pack_end(hbox, send);
+    evas_object_show(send);
+
+    return hbox;
+}
+
+/* TODO */
 static Evas_Object* make_menu(MokoWin* win)
 {
     Evas_Object *m = elm_table_add(win->win);
@@ -129,11 +141,7 @@ void msg_list_init(MessageThread* t)
 
     mokowin_menu_set(win, make_menu(win));
 
-    Evas_Object* reply = elm_entry_add(win->win);
-    elm_entry_single_line_set(reply, FALSE);
-    evas_object_size_hint_weight_set(reply, EVAS_HINT_EXPAND, 0.0);
-    evas_object_size_hint_align_set(reply, EVAS_HINT_FILL, 0.0);
-
+    Evas_Object* reply = make_composer(win);
     mokowin_pack_end(win, reply, TRUE);
     evas_object_show(reply);
 
