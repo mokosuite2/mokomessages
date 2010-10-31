@@ -49,15 +49,10 @@ int main(int argc, char* argv[])
     mokosuite_utils_init();
     mokosuite_pim_init();
     mokosuite_ui_init(argc, argv);
-
-    freesmartphone_glib_init();
     phone_utils_init();
 
     EINA_LOG_DBG("Loading data from %s", MOKOMESSAGES_DATADIR);
     elm_theme_extension_add(NULL, MOKOMESSAGES_DATADIR "/theme.edj");
-
-    // TODO
-    messagesdb_init(NULL, NULL);
 
     thread_win_init(NULL);
 

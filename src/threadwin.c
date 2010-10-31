@@ -128,11 +128,18 @@ static Evas_Object* make_menu(void)
 
 void _thread(MessageThread* th, gpointer userdata)
 {
-    g_debug("THREAD %p, userdata=%p", th, userdata);
+    EINA_LOG_DBG("THREAD %p, userdata=%p", th, userdata);
 
     th->data = g_new0(gpointer, THREAD_DATA_SIZE);
     th->data[THREAD_DATA_LISTITEM] =
         elm_genlist_item_append(th_list, &th_itc, th, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+}
+
+static void _message(MessageEntry* e, void* userdata)
+{
+    // FIXME reload threads for now
+    elm_genlist_clear(th_list);
+    messagesdb_foreach_thread(_thread, NULL);
 }
 
 void thread_win_init(RemoteConfigService *config)
@@ -143,7 +150,7 @@ void thread_win_init(RemoteConfigService *config)
 
     win = mokowin_new("mokomessages", TRUE);
     if (win == NULL) {
-        g_error("[ThreadWin] Cannot create main window. Exiting");
+        EINA_LOG_ERR("[ThreadWin] Cannot create main window. Exiting");
         return;
     }
 
@@ -160,7 +167,10 @@ void thread_win_init(RemoteConfigService *config)
     th_list = thread_list();
     mokowin_pack_start(win, th_list, FALSE);
 
-    // carica le conversazioni :)
+    // init messagesdb
+    messagesdb_init(_message, NULL);
+
+    // load threads :)
     messagesdb_foreach_thread(_thread, NULL);
 
     // TEST

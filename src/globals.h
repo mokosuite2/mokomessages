@@ -45,9 +45,9 @@ extern int _log_dom;
 #define MOKOMESSAGES_DATADIR        DATADIR "/mokosuite/messages"
 
 enum {
-    THREAD_DATA_LISTITEM = 0,
-    THREAD_DATA_CONTACTENTRY,
-    THREAD_DATA_MSGLIST,
+    THREAD_DATA_LISTITEM = 0,       /* genlist item in threads window */
+    THREAD_DATA_CONTACTENTRY,       /* contact entry for peer */
+    THREAD_DATA_MSGLIST,            /* message list MokoWin */
     THREAD_DATA_SIZE
 };
 

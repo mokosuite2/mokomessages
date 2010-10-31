@@ -8,9 +8,26 @@
 
 #include <glib/gi18n-lib.h>
 
+static bool _delete_real(void* mokowin)
+{
+    MokoWin* win = MOKO_WIN(mokowin);
+    mokowin_destroy(win);
+
+    // TODO free message entries
+
+    return FALSE;
+}
+
 static void _delete(void* mokowin, Evas_Object* obj, void* event_info)
 {
-    mokowin_hide((MokoWin *)mokowin);
+    MokoWin* win = MOKO_WIN(mokowin);
+    mokowin_hide(win);
+
+    MessageThread* t = win->data;
+    messagesdb_disconnect(t->peer);
+
+    // destroy window (delayed)
+    ecore_idler_add(_delete_real, win);
 }
 
 void msg_list_activate(MessageThread* t)
@@ -74,6 +91,39 @@ static void test_messages(MessageThread* t)
         "Bella zio!!! :)<br>ZIOOOO!!! CACCHIOOO!!!!<br>CIAO :)",
         "bottom_right"
     );
+}
+
+static bool scroll_down(void* data)
+{
+    MokoWin* win = data;
+    int h;
+    evas_object_geometry_get(win->vbox, NULL, NULL, NULL, &h);
+    elm_scroller_region_show(win->scroller, 0, h, 480, 640);
+    return FALSE;
+}
+
+static void _message(MessageEntry* e, void* userdata)
+{
+    MessageThread* t = userdata;
+
+    if (e != NULL) {
+        EINA_LOG_DBG("Message %d from %s", e->id, e->peer);
+        create_bubble(MOKO_WIN(t->data[THREAD_DATA_MSGLIST]),
+            e->peer,
+            e->content,
+            (e->direction == DIRECTION_INCOMING) ? "bottom_right" : "bottom_left"
+        );
+    }
+
+    // no more messages, scroll down!
+    else {
+        ecore_idler_add(scroll_down, t->data[THREAD_DATA_MSGLIST]);
+    }
+}
+
+static void _load_messages(MessageThread* t)
+{
+    messagesdb_foreach(_message, t->peer, FALSE, t);
 }
 
 static Evas_Object* make_composer(MokoWin* win)
@@ -145,16 +195,15 @@ void msg_list_init(MessageThread* t)
     mokowin_pack_end(win, reply, TRUE);
     evas_object_show(reply);
 
-    // store window :)
+    // store some useful stuff :)
     t->data[THREAD_DATA_MSGLIST] = win;
+    win->data = t;
+
+    messagesdb_connect(_message, t->peer, t);
+
+    // load messages!
+    _load_messages(t);
 
     // TEST
     evas_object_resize(win->win, 480, 640);
-    test_messages(t);
-
-    /* TODO scroll to end
-    int h;
-    evas_object_geometry_get(win->vbox, NULL, NULL, NULL, &h);
-    elm_scroller_region_show(win->scroller, 0, h, 480, 640);
-    */
 }
