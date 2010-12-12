@@ -49,7 +49,7 @@ static Evas_Object* create_bubble(MokoWin* win, const char* peer, const char* te
     Evas_Object* msg = elm_bubble_add(win->win);
     evas_object_size_hint_weight_set(msg, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(msg, EVAS_HINT_FILL, 0.0);
-    elm_bubble_label_set(msg, peer);
+    //elm_bubble_label_set(msg, peer);
     elm_bubble_info_set(msg, get_time_repr(time(NULL)));
     elm_bubble_corner_set(msg, side);
     evas_object_show(msg);
