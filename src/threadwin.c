@@ -21,6 +21,7 @@ static void* current_query = NULL;
 static void _delete(void* mokowin, Evas_Object* obj, void* event_info)
 {
     mokowin_hide((MokoWin *)mokowin);
+    elm_exit();
 }
 
 static void _list_selected(void *data, Evas_Object *obj, void *event_info) {
