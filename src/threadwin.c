@@ -15,6 +15,9 @@ static MokoWin* win = NULL;
 static Evas_Object* th_list;
 static Elm_Genlist_Item_Class th_itc = {0};
 
+/* current threads query */
+static void* current_query = NULL;
+
 static void _delete(void* mokowin, Evas_Object* obj, void* event_info)
 {
     mokowin_hide((MokoWin *)mokowin);
@@ -130,16 +133,20 @@ void _thread(MessageThread* th, gpointer userdata)
 {
     EINA_LOG_DBG("THREAD %p, userdata=%p", th, userdata);
 
-    th->data = g_new0(gpointer, THREAD_DATA_SIZE);
-    th->data[THREAD_DATA_LISTITEM] =
-        elm_genlist_item_append(th_list, &th_itc, th, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+    thread_data_t* data = calloc(1, sizeof(thread_data_t));
+    th->data = (void*) data;
+
+    data->list_item = elm_genlist_item_append(th_list, &th_itc, th, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 }
 
 static void _message(MessageEntry* e, void* userdata)
 {
+    if (current_query)
+        messagesdb_foreach_stop(current_query);
+
     // FIXME reload threads for now
     elm_genlist_clear(th_list);
-    messagesdb_foreach_thread(_thread, NULL);
+    current_query = messagesdb_foreach_thread(_thread, NULL);
 }
 
 void thread_win_init(RemoteConfigService *config)
@@ -171,7 +178,7 @@ void thread_win_init(RemoteConfigService *config)
     messagesdb_init(_message, NULL);
 
     // load threads :)
-    messagesdb_foreach_thread(_thread, NULL);
+    current_query = messagesdb_foreach_thread(_thread, NULL);
 
     // TEST
     evas_object_resize(win->win, 480, 640);

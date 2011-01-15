@@ -29,6 +29,9 @@
 #include <libintl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <mokosuite/pim/contactsdb.h>
+#include <mokosuite/pim/messagesdb.h>
+#include <mokosuite/ui/gui.h>
 
 // default log domain
 #undef EINA_LOG_DOMAIN_DEFAULT
@@ -44,11 +47,63 @@ extern int _log_dom;
 #define MOKOMESSAGES_SYSCONFDIR     SYSCONFDIR "/mokosuite"
 #define MOKOMESSAGES_DATADIR        DATADIR "/mokosuite/messages"
 
-enum {
-    THREAD_DATA_LISTITEM = 0,       /* genlist item in threads window */
-    THREAD_DATA_CONTACTENTRY,       /* contact entry for peer */
-    THREAD_DATA_MSGLIST,            /* message list MokoWin */
-    THREAD_DATA_SIZE
-};
+typedef struct {
+    /* -- thread win stuff -- */
+
+    /* thread list item */
+    Elm_Genlist_Item* list_item;
+
+    /* contact entry */
+    ContactEntry* contact;
+
+    /* -- message list stuff -- */
+
+    /* message list window */
+    MokoWin* message_list;
+
+    /* reply entry */
+    Evas_Object* reply_entry;
+
+    /* send button */
+    Evas_Object* send_button;
+
+    /* message list is being destroyed */
+    bool destroying;
+
+    /* message list is loading */
+    bool loading;
+
+    /* a message is being sent */
+    bool sending;
+
+    /* number of messages requested */
+    int requested;
+
+    /* number of messages loaded */
+    int loaded;
+
+    /* MessagesDB query */
+    void* query;
+
+} thread_data_t;
+
+
+typedef struct {
+    /* thread */
+    MessageThread* thread;
+
+    /* content AnchorBlock */
+    Evas_Object* content;
+
+    /* hbox for content + icon */
+    Evas_Object* hbox;
+
+    /* status icon */
+    Evas_Object* status;
+
+    /* error flag */
+    bool error;
+
+} message_data_t;
 
 #endif  /* __GLOBALS_H */

@@ -2,7 +2,10 @@ SUBDIRS = themes
 
 MAINTAINERCLEANFILES = Makefile.in
 
-#filesdir = $(datadir)/mokosuite/home
-#files_DATA = wallpaper_mountain.jpg
+filesdir = $(datadir)/mokosuite/messages
+files_DATA = msg_pending.png msg_error.png
 
-#EXTRA_DIST = $(files_DATA)
+desktopdir = $(datadir)/applications
+desktop_DATA = mokomessages.desktop
+
+EXTRA_DIST = $(files_DATA) $(desktop_DATA)
