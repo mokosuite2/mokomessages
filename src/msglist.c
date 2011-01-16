@@ -106,13 +106,19 @@ void msg_list_hide(MessageThread* t)
 
 static void _options_popup_click(gpointer popup, gpointer data, int index, gboolean final)
 {
-    //MessageEntry* e = (MessageEntry*) data;
+    MessageEntry* e = (MessageEntry*) data;
+    message_data_t* mt = (message_data_t*) e->data;
 
     switch (index) {
 
         // delete message
         case 1:
-            // TODO
+            // set as deleted
+            mt->deleting = TRUE;
+            // delete from storage
+            messagesdb_delete_message(e->id);
+            // remove message box
+            evas_object_del(mt->container);
 
             break;
 
@@ -201,8 +207,8 @@ static void update_message_status(MessageEntry* e)
     MessageThread* t = mt->thread;
     thread_data_t* th_data = (thread_data_t*) t->data;
 
-    // window is being destroyed -- exit
-    if (th_data->destroying) return;
+    // window is being destroyed or message is being deleted -- exit
+    if (th_data->destroying || mt->deleting) return;
 
     if (mt->status == NULL) {
         Evas_Object *icon = elm_icon_add(th_data->message_list->win);
@@ -236,13 +242,15 @@ static void update_message_status(MessageEntry* e)
     }
 }
 
-static Evas_Object* create_message(MokoWin* win, MessageEntry* e, bool prepend, Evas_Object** hbox)
+static Evas_Object* create_message(MokoWin* win, MessageEntry* e, bool prepend, Evas_Object** hbox, Evas_Object** container)
 {
     Evas_Object* msg = elm_frame_add(win->win);
     evas_object_size_hint_weight_set(msg, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(msg, EVAS_HINT_FILL, 0.0);
     elm_object_style_set(msg, "outdent_top");
     evas_object_show(msg);
+
+    *container = msg;
 
     Evas_Object* lbl = elm_anchorblock_add(win->win);
     evas_object_size_hint_weight_set(lbl, EVAS_HINT_EXPAND, 0.0);
@@ -360,7 +368,7 @@ static void _message(MessageEntry* e, void* userdata, bool prepend)
         e->data = (void*) mt;
 
         mt->thread = t;
-        mt->content = create_message(th_data->message_list, e, prepend, &mt->hbox);
+        mt->content = create_message(th_data->message_list, e, prepend, &mt->hbox, &mt->container);
 
         update_message_status(e);
     }

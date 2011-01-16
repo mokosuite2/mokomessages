@@ -92,17 +92,23 @@ typedef struct {
     /* thread */
     MessageThread* thread;
 
-    /* content AnchorBlock */
-    Evas_Object* content;
+    /* container object */
+    Evas_Object* container;
 
     /* hbox for content + icon */
     Evas_Object* hbox;
+
+    /* content AnchorBlock */
+    Evas_Object* content;
 
     /* status icon */
     Evas_Object* status;
 
     /* error flag */
     bool error;
+
+    /* delete flag */
+    bool deleting;
 
 } message_data_t;
 

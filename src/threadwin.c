@@ -84,6 +84,16 @@ static void _list_realized(void *data, Evas_Object *obj, void *event_info)
     }
 }
 
+static Elm_Genlist_Item* new_message_item(Evas_Object* list)
+{
+    // aggiungi il primo elemento "Nuovo messaggio"
+    Elm_Genlist_Item_Class *itc = g_new0(Elm_Genlist_Item_Class, 1);
+    itc->item_style = "generic_sub";
+    itc->func.label_get = _newmsg_genlist_label_get;
+
+    return elm_genlist_item_append(list, itc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+}
+
 static Evas_Object* thread_list(void)
 {
     Evas_Object* list = elm_genlist_add(win->win);
@@ -100,12 +110,8 @@ static Evas_Object* thread_list(void)
     th_itc.item_style = "thread";
     th_itc.func.label_get = _th_genlist_label_get;
 
-    // aggiungi il primo elemento "Nuovo messaggio"
-    Elm_Genlist_Item_Class *itc = g_new0(Elm_Genlist_Item_Class, 1);
-    itc->item_style = "generic_sub";
-    itc->func.label_get = _newmsg_genlist_label_get;
-
-    elm_genlist_item_append(list, itc, NULL, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+    // first element: new message
+    new_message_item(list);
 
     evas_object_show(list);
     return list;
@@ -147,6 +153,7 @@ static void _message(MessageEntry* e, void* userdata)
 
     // FIXME reload threads for now
     elm_genlist_clear(th_list);
+    new_message_item(th_list);
     current_query = messagesdb_foreach_thread(_thread, NULL);
 }
 
@@ -176,7 +183,7 @@ void thread_win_init(RemoteConfigService *config)
     mokowin_pack_start(win, th_list, FALSE);
 
     // init messagesdb
-    messagesdb_init(_message, NULL);
+    messagesdb_init(_message, _message, NULL);
 
     // load threads :)
     current_query = messagesdb_foreach_thread(_thread, NULL);
