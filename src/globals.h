@@ -67,6 +67,15 @@ typedef struct {
     /* send button */
     Evas_Object* send_button;
 
+    /* recipient entry (only for new threads) */
+    Evas_Object* rcpt_entry;
+
+    /* recipient box (only for new threads) */
+    Evas_Object* rcpt_box;
+
+    /* new thread flag */
+    bool new_thread;
+
     /* message list is being destroyed */
     bool destroying;
 
@@ -84,6 +93,9 @@ typedef struct {
 
     /* MessagesDB query */
     void* query;
+
+    /* loaded message entries */
+    Eina_List* entries;
 
 } thread_data_t;
 

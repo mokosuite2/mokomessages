@@ -18,19 +18,39 @@ static Elm_Genlist_Item_Class th_itc = {0};
 /* current threads query */
 static void* current_query = NULL;
 
+/* current new thread */
+MessageThread* new_thread = NULL;
+
+/* threads hash table */
+static GHashTable* thread_store = NULL;
+
 static void _delete(void* mokowin, Evas_Object* obj, void* event_info)
 {
     mokowin_hide((MokoWin *)mokowin);
     elm_exit();
 }
 
-static void _list_selected(void *data, Evas_Object *obj, void *event_info) {
-
+static void _list_selected(void *data, Evas_Object *obj, void *event_info)
+{
+    // deselect item
     elm_genlist_item_selected_set((Elm_Genlist_Item*)event_info, FALSE);
-    // TODO
 
+    // create/show conversation
     MessageThread* t = (MessageThread*) elm_genlist_item_data_get((Elm_Genlist_Item*)event_info);
-    msg_list_init(t);
+
+    // open a thread
+    if (t) {
+        thread_data_t* th_data = (thread_data_t*) t->data;
+        if (!th_data->message_list)
+            msg_list_init(t);
+    }
+
+    // new thread
+    else {
+        EINA_LOG_DBG("composing new message");
+        t = new_thread = msg_list_new(NULL);
+    }
+
     msg_list_activate(t);
 }
 
@@ -144,6 +164,7 @@ void _thread(MessageThread* th, gpointer userdata)
     th->data = (void*) data;
 
     data->list_item = elm_genlist_item_append(th_list, &th_itc, th, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+    g_hash_table_insert(thread_store, g_strdup(th->peer), th);
 }
 
 static void _message(MessageEntry* e, void* userdata)
@@ -153,12 +174,26 @@ static void _message(MessageEntry* e, void* userdata)
 
     // FIXME reload threads for now
     elm_genlist_clear(th_list);
+
+    // delete store
+    g_hash_table_destroy(thread_store);
+    // TODO free thread function
+    thread_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, /* TODO */NULL);
+
     new_message_item(th_list);
     current_query = messagesdb_foreach_thread(_thread, NULL);
 }
 
+MessageThread* thread_win_get_thread(const char* peer)
+{
+    return g_hash_table_lookup(thread_store, peer);
+}
+
 void thread_win_init(RemoteConfigService *config)
 {
+    // TODO free thread function
+    thread_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, /* TODO */NULL);
+
     // overlay per gli elementi della lista dei thread
     elm_theme_overlay_add(NULL, "elm/genlist/item/thread/default");
     elm_theme_overlay_add(NULL, "elm/genlist/item_odd/thread/default");
