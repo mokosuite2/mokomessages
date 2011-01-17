@@ -1,4 +1,4 @@
-#define SCALE_FACTOR        2
+#define SCALE_FACTOR        1
 
 #define COLOR_LIGHT_GRAY 245 245 245 255
 #define COLOR_DARK_GRAY 79 79 79 255
@@ -125,8 +125,8 @@ collections {
                     color: 0 0 0 255;
                     color3: 0 0 0 0;
                     text {
-                        font: "redensek";
-                        size: 10;
+                        font: "DroidSans";
+                        size: 12;
                         elipsis: 0.0;
                         min: 0 1;
                         align: 0.0 1.0;
@@ -154,8 +154,8 @@ collections {
                     color: COLOR_DARK_GRAY;
                     color3: 0 0 0 0;
                     text {
-                        font: "redensek";
-                        size: 8;
+                        font: "DroidSans";
+                        size: 10;
                         elipsis: 0.0;
                         min: 0 1;
                         align: 0.0 0.0;
@@ -182,8 +182,8 @@ collections {
                     color: COLOR_DARK_GRAY;
                     color3: 0 0 0 0;
                     text {
-                        font: "redensek";
-                        size: 8;
+                        font: "DroidSans";
+                        size: 10;
                         elipsis: 0.0;
                         min: 0 1;
                         align: 1.0 0.0;
