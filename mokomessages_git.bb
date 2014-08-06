@@ -1,5 +1,5 @@
 DESCRIPTION = "Desktop environment and phone stack GUI for SHR - messages application"
-HOMEPAGE = "http://gitorious.org/mokosuite2"
+HOMEPAGE = "https://gitorious.org/mokosuite2"
 AUTHOR = "Daniele Ricci"
 LICENSE = "GPLv3"
 DEPENDS = "libmokosuite libfreesmartphone-glib libphone-utils glib-2.0 dbus-glib elementary edje-native"
